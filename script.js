@@ -12,16 +12,48 @@ const gameboard = (() => {
     }
 })();
 
-
-
 const playerFactory = (name, symbol) => {
-  return { name, symbol };
-};
+    return { name, symbol };
+  };
 
-const playerOne = playerFactory('Player 1', 'X');
-const playerTwo = playerFactory('Player 2', 'O');
+let playerOne = playerFactory('Player 1', 'X');
+let playerTwo = playerFactory('Player 2', 'O');
+
+
 
 const gameplay = () => {
+    const getPlayers = () => {
+        const play = document.querySelector('#play');
+        const players = document.querySelector('#players')
+        const playersForm = document.querySelector('#players-form');
+        const playerOneInput = document.querySelector('#player-one');
+        const playerTwoInput = document.querySelector('#player-two');
+        playersForm.addEventListener('submit', event => {
+            event.preventDefault();
+            playerOne.name = playerOneInput.value;
+            playerTwo.name = playerTwoInput.value;
+            players.textContent = `${playerOne.name} vs. ${playerTwo.name}`;
+        })
+    }
+
+
+    const toggleForm = () => {
+        const formContainer = document.querySelector('#form-container');
+        const play = document.querySelector('#play')
+        const start = document.querySelector('#start')
+        play.addEventListener('click', () => {
+            if (formContainer.style.display === 'flex') {
+                formContainer.style.display = 'none';
+            }
+        })
+        start.addEventListener('click', () => {
+            if (formContainer.style.display === 'none') {
+                formContainer.style.display = 'flex';
+            }
+        })
+    }
+
+
     let counter = 0;
     const checkClicks = () => {
         const gameboardBtns = document.querySelectorAll('.gameboard-btn');
@@ -77,21 +109,32 @@ const gameplay = () => {
             || ((gameboardBtns[2].textContent === player.symbol) && (gameboardBtns[4].textContent === player.symbol) && (gameboardBtns[6].textContent === player.symbol))) {
             winner.textContent = `${player.name} Wins!`;
             disbleBoard();
+            return true
+        }
+        else {
+            return false;
         }
     }
-
 
     const checkForTie = () => {
         const winner = document.querySelector('#winner');
         if (counter > 8) {
-            winner.textContent = `It's a Tie!`;
-            disbleBoard();
+            if ((findWinner(playerOne) === true) || findWinner(playerTwo) === true) {
+                return false;
+            }
+            else {
+                winner.textContent = `It's a Tie!`;
+                disbleBoard();
+                return true;
+            }
         }
     }
 
-    return { checkClicks, resetGame };
+    return { toggleForm, getPlayers, checkClicks, resetGame };
 };
 
 const game = gameplay();
+game.toggleForm();
+game.getPlayers();
 game.checkClicks();
 game.resetGame();
